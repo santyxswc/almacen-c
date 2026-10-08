@@ -1,0 +1,50 @@
+# @file ci.yml
+# @brief Compila y prueba el proyecto en Linux, Windows y macOS en cada push.
+# @author Santiago Caicedo
+
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  compilar-y-probar:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar
+        run: cmake -S . -B build -DALMACEN_WARNINGS_AS_ERRORS=ON -DCMAKE_BUILD_TYPE=Release
+
+      - name: Compilar
+        run: cmake --build build --config Release
+
+      - name: Pruebas
+        run: ctest --test-dir build -C Release --output-on-failure
+
+  sanitizadores:
+    name: AddressSanitizer + UBSan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compilar con sanitizadores
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DALMACEN_WARNINGS_AS_ERRORS=ON \
+            -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer"
+          cmake --build build
+      - name: Pruebas
+        run: ctest --test-dir build --output-on-failure
+
+  formato:
+    name: Formato (clang-format)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verificar formato
+        run: find src tests -name '*.?pp' | xargs clang-format --dry-run --Werror

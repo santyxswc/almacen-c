@@ -1,0 +1,28 @@
+# @file Doxyfile
+# @brief Configuración de Doxygen para generar la documentación de la API.
+# @author Santiago Caicedo
+#
+# Uso: doxygen Doxyfile   (o cmake --build build --target docs)
+# Resultado: docs/api/html/index.html
+
+PROJECT_NAME           = "Sistema de Almacen"
+PROJECT_BRIEF          = "Gestion de clientes, pedidos, facturas y almacenes con arquitectura limpia"
+PROJECT_NUMBER         = 2.0.0
+OUTPUT_DIRECTORY       = docs/api
+OUTPUT_LANGUAGE        = Spanish
+INPUT                  = src README.md docs/ARQUITECTURA.md
+RECURSIVE              = YES
+FILE_PATTERNS          = *.hpp *.cpp *.md
+USE_MDFILE_AS_MAINPAGE = README.md
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = YES
+JAVADOC_AUTOBRIEF      = YES
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+HAVE_DOT               = NO
+CLASS_GRAPH            = YES
+COLLABORATION_GRAPH    = YES
+SOURCE_BROWSER         = YES
+WARN_IF_UNDOCUMENTED   = YES
+QUIET                  = YES
