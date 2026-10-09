@@ -25,6 +25,7 @@ public:
     void guardar(const dominio::Cliente& cliente) override;
     std::optional<dominio::Cliente> buscar(int id) const override;
     std::vector<dominio::Cliente> listar() const override;
+    int siguienteId() const override;
 
 private:
     std::map<int, dominio::Cliente> clientes_;
@@ -39,6 +40,9 @@ public:
     std::optional<dominio::Pedido> buscar(int id) const override;
     std::vector<dominio::Pedido> listarPorCliente(int clienteId) const override;
     bool existeFactura(int facturaId) const override;
+    std::vector<dominio::Pedido> listar() const override;
+    int siguienteId() const override;
+    int siguienteFacturaId() const override;
 
 private:
     std::map<int, dominio::Pedido> pedidos_;

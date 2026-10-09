@@ -6,6 +6,8 @@
 
 #include "dominio/LineaFactura.hpp"
 
+#include <utility>
+
 #include "dominio/Excepciones.hpp"
 #include "dominio/Producto.hpp"
 
@@ -19,6 +21,21 @@ LineaFactura::LineaFactura(const Producto& producto, int cantidad)
       precioUnitario_(producto.precioFinal()) {
     if (cantidad <= 0) {
         throw ValorInvalido("La cantidad de " + producto.nombre() + " debe ser mayor que cero.");
+    }
+}
+
+LineaFactura::LineaFactura(int productoId, std::string nombreProducto, int cantidad, Dinero precioBase,
+                           Dinero precioUnitario)
+    : productoId_(productoId),
+      nombreProducto_(std::move(nombreProducto)),
+      cantidad_(cantidad),
+      precioBase_(precioBase),
+      precioUnitario_(precioUnitario) {
+    if (cantidad <= 0) {
+        throw ValorInvalido("La cantidad de " + nombreProducto_ + " debe ser mayor que cero.");
+    }
+    if (precioUnitario > precioBase) {
+        throw ValorInvalido("El precio con descuento no puede ser mayor que el precio de lista.");
     }
 }
 

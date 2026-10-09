@@ -61,6 +61,9 @@ public:
     std::string describir() const override;
     std::unique_ptr<PoliticaDescuento> clonar() const override;
 
+    /** @return Cantidad que se descuenta de cada unidad. */
+    Dinero monto() const noexcept { return monto_; }
+
 private:
     Dinero monto_;
 };
@@ -79,6 +82,9 @@ public:
     Dinero aplicar(Dinero precio) const override;
     std::string describir() const override;
     std::unique_ptr<PoliticaDescuento> clonar() const override;
+
+    /** @return Porcentaje que se descuenta, entre 0 y 100. */
+    double porcentaje() const noexcept { return porcentaje_; }
 
 private:
     double porcentaje_;

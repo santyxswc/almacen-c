@@ -45,6 +45,12 @@ public:
      */
     void agregarProducto(const Producto& producto, int cantidad);
 
+    /**
+     * @brief Agrega una línea ya armada (se usa al reconstruir una factura guardada).
+     * @param linea Línea a agregar; si su producto ya estaba, se suman las cantidades.
+     */
+    void agregarLinea(const LineaFactura& linea);
+
     /** @return Las líneas de la factura en el orden en que se agregaron. */
     const std::vector<LineaFactura>& lineas() const noexcept { return lineas_; }
 

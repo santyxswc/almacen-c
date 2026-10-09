@@ -30,6 +30,26 @@ private:
 };
 
 /**
+ * @brief Registra un producto nuevo en el catálogo con el siguiente id libre.
+ */
+class CrearProducto {
+public:
+    /** @param almacenes Repositorio de almacenes. */
+    explicit CrearProducto(RepositorioAlmacenes& almacenes) : almacenes_(almacenes) {}
+
+    /**
+     * @param solicitud Nombre, precio, descuento y almacén donde se guarda.
+     * @return El producto creado, con su id y su precio final.
+     * @throws dominio::ValorInvalido si el nombre está vacío o el descuento no es válido.
+     * @throws dominio::EntidadNoEncontrada si el almacén no existe.
+     */
+    ProductoDto ejecutar(const SolicitudProducto& solicitud);
+
+private:
+    RepositorioAlmacenes& almacenes_;
+};
+
+/**
  * @brief Crea un sub-almacén dentro de otro almacén del árbol.
  */
 class CrearSubAlmacen {
@@ -38,7 +58,7 @@ public:
     explicit CrearSubAlmacen(RepositorioAlmacenes& almacenes) : almacenes_(almacenes) {}
 
     /**
-     * @param id Id del sub-almacén nuevo, único en el árbol.
+     * @param id Id del sub-almacén nuevo, único en el árbol; 0 = el siguiente libre.
      * @param nombre Nombre del sub-almacén.
      * @param padreId Almacén donde se crea; 0 significa el almacén principal.
      * @return El sub-almacén creado.
@@ -89,6 +109,21 @@ public:
 
 private:
     RepositorioAlmacenes& almacenes_;
+};
+
+/**
+ * @brief Devuelve el árbol completo de almacenes para mostrarlo.
+ */
+class ConsultarArbolAlmacenes {
+public:
+    /** @param almacenes Repositorio de almacenes. */
+    explicit ConsultarArbolAlmacenes(const RepositorioAlmacenes& almacenes) : almacenes_(almacenes) {}
+
+    /** @return El almacén principal con todos sus descendientes. */
+    NodoAlmacenDto ejecutar() const;
+
+private:
+    const RepositorioAlmacenes& almacenes_;
 };
 
 }  // namespace almacen::aplicacion

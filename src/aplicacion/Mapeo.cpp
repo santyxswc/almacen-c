@@ -32,6 +32,7 @@ FacturaDto aDto(const dominio::Factura& factura, int pedidoId) {
 PedidoDto aDto(const dominio::Pedido& pedido) {
     PedidoDto dto;
     dto.id = pedido.id();
+    dto.clienteId = pedido.clienteId();
     for (const auto& factura : pedido.facturas()) {
         dto.facturas.push_back(aDto(factura, pedido.id()));
     }

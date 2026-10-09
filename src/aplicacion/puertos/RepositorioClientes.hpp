@@ -39,6 +39,9 @@ public:
 
     /** @return Todos los clientes ordenados por id. */
     virtual std::vector<dominio::Cliente> listar() const = 0;
+
+    /** @return Un id libre para un cliente nuevo (el mayor existente más uno). */
+    virtual int siguienteId() const = 0;
 };
 
 }  // namespace almacen::aplicacion

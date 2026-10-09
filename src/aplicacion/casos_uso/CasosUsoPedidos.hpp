@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "aplicacion/Dtos.hpp"
 #include "aplicacion/puertos/RepositorioAlmacenes.hpp"
 #include "aplicacion/puertos/RepositorioClientes.hpp"
@@ -41,6 +43,10 @@ private:
 
 /**
  * @brief Emite una factura con productos del almacén y la agrega a un pedido.
+ *
+ * Si la solicitud no trae pedido, abre uno nuevo para el cliente indicado.
+ * La operación es atómica: si algún producto o cantidad no es válido, no se
+ * crea ni el pedido ni la factura.
  */
 class CrearFactura {
 public:
@@ -52,9 +58,18 @@ public:
         : pedidos_(pedidos), almacenes_(almacenes) {}
 
     /**
+     * @param pedidos Repositorio de pedidos.
+     * @param almacenes Repositorio de almacenes, para buscar los productos.
+     * @param clientes Repositorio de clientes, para validar el cliente de un pedido nuevo.
+     */
+    CrearFactura(RepositorioPedidos& pedidos, const RepositorioAlmacenes& almacenes,
+                 const RepositorioClientes& clientes)
+        : pedidos_(pedidos), almacenes_(almacenes), clientes_(&clientes) {}
+
+    /**
      * @param solicitud Id de la factura, pedido y productos con sus cantidades.
      * @return La factura creada con sus totales.
-     * @throws dominio::EntidadNoEncontrada si el pedido o algún producto no existe.
+     * @throws dominio::EntidadNoEncontrada si el pedido, el cliente o algún producto no existe.
      * @throws dominio::EntidadDuplicada si el id de factura ya se usó.
      * @throws dominio::ValorInvalido si no hay productos o alguna cantidad no es positiva.
      */
@@ -63,6 +78,7 @@ public:
 private:
     RepositorioPedidos& pedidos_;
     const RepositorioAlmacenes& almacenes_;
+    const RepositorioClientes* clientes_ = nullptr;
 };
 
 /**
@@ -86,6 +102,21 @@ public:
 
 private:
     const RepositorioClientes& clientes_;
+    const RepositorioPedidos& pedidos_;
+};
+
+/**
+ * @brief Lista todos los pedidos con sus facturas (historial completo).
+ */
+class ListarPedidos {
+public:
+    /** @param pedidos Repositorio de pedidos. */
+    explicit ListarPedidos(const RepositorioPedidos& pedidos) : pedidos_(pedidos) {}
+
+    /** @return Los pedidos ordenados por id. */
+    std::vector<PedidoDto> ejecutar() const;
+
+private:
     const RepositorioPedidos& pedidos_;
 };
 

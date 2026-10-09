@@ -35,6 +35,14 @@ public:
      */
     ClienteDto ejecutar(int id, const std::string& nombre);
 
+    /**
+     * @brief Registra un cliente con el siguiente id libre.
+     * @param nombre Nombre del cliente.
+     * @return El cliente creado, con su id asignado.
+     * @throws dominio::ValorInvalido si el nombre está vacío.
+     */
+    ClienteDto ejecutar(const std::string& nombre);
+
 private:
     RepositorioClientes& clientes_;
 };

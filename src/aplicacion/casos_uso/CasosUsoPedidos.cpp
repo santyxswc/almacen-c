@@ -6,6 +6,7 @@
 
 #include "aplicacion/casos_uso/CasosUsoPedidos.hpp"
 
+#include <optional>
 #include <utility>
 
 #include "aplicacion/Mapeo.hpp"
@@ -26,15 +27,25 @@ PedidoDto CrearPedido::ejecutar(int pedidoId, int clienteId) {
 }
 
 FacturaDto CrearFactura::ejecutar(const SolicitudFactura& solicitud) {
-    auto pedido = pedidos_.buscar(solicitud.pedidoId);
-    if (!pedido) {
-        throw dominio::EntidadNoEncontrada("Pedido", solicitud.pedidoId);
-    }
-    if (pedidos_.existeFactura(solicitud.facturaId)) {
-        throw dominio::EntidadDuplicada("factura", solicitud.facturaId);
+    std::optional<dominio::Pedido> pedido;
+    if (solicitud.pedidoId != 0) {
+        pedido = pedidos_.buscar(solicitud.pedidoId);
+        if (!pedido) {
+            throw dominio::EntidadNoEncontrada("Pedido", solicitud.pedidoId);
+        }
+    } else {
+        if (clientes_ == nullptr || !clientes_->buscar(solicitud.clienteId)) {
+            throw dominio::EntidadNoEncontrada("Cliente", solicitud.clienteId);
+        }
+        pedido.emplace(pedidos_.siguienteId(), solicitud.clienteId);
     }
 
-    dominio::Factura factura(solicitud.facturaId, pedido->clienteId());
+    const int facturaId = solicitud.facturaId != 0 ? solicitud.facturaId : pedidos_.siguienteFacturaId();
+    if (pedidos_.existeFactura(facturaId)) {
+        throw dominio::EntidadDuplicada("factura", facturaId);
+    }
+
+    dominio::Factura factura(facturaId, pedido->clienteId());
     for (const auto& item : solicitud.items) {
         const auto producto = almacenes_.principal().buscarProducto(item.productoId);
         if (!producto) {
@@ -61,6 +72,14 @@ ResumenClienteDto ConsultarResumenCliente::ejecutar(int clienteId) const {
         resumen.totalGeneral += pedido.total();
     }
     return resumen;
+}
+
+std::vector<PedidoDto> ListarPedidos::ejecutar() const {
+    std::vector<PedidoDto> resultado;
+    for (const auto& pedido : pedidos_.listar()) {
+        resultado.push_back(aDto(pedido));
+    }
+    return resultado;
 }
 
 }  // namespace almacen::aplicacion

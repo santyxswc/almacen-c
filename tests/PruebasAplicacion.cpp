@@ -6,6 +6,7 @@
 
 #include "MiniTest.hpp"
 #include "aplicacion/casos_uso/CasosUsoClientes.hpp"
+#include "aplicacion/casos_uso/CasosUsoGenerales.hpp"
 #include "aplicacion/casos_uso/CasosUsoInventario.hpp"
 #include "aplicacion/casos_uso/CasosUsoPedidos.hpp"
 #include "dominio/Excepciones.hpp"
@@ -32,6 +33,11 @@ struct Escenario {
     CrearSubAlmacen crearSubAlmacen{almacenes};
     ConsultarAlmacen consultarAlmacen{almacenes};
     AsignarProductoAAlmacen asignar{almacenes};
+    CrearFactura vender{pedidos, almacenes, clientes};
+    CrearProducto crearProducto{almacenes};
+    ListarPedidos listarPedidos{pedidos};
+    ConsultarArbolAlmacenes arbol{almacenes};
+    ConsultarResumenGeneral resumenGeneral{clientes, pedidos, almacenes};
 };
 
 }  // namespace
@@ -106,4 +112,85 @@ PRUEBA(listar_productos_no_repite_los_asignados_a_sub_almacenes) {
     e.crearSubAlmacen.ejecutar(2, "Bodega");
     e.asignar.ejecutar(1, 2);
     VERIFICAR_IGUAL(std::size_t{4}, e.listarProductos.ejecutar().size());
+}
+
+PRUEBA(los_ids_se_asignan_solos) {
+    Escenario e;
+    VERIFICAR_IGUAL(1, e.crearCliente.ejecutar("Ana").id);
+    VERIFICAR_IGUAL(2, e.crearCliente.ejecutar("Luis").id);
+    VERIFICAR_IGUAL(2, e.crearSubAlmacen.ejecutar(0, "Bodega").id);
+    VERIFICAR_IGUAL(3, e.crearSubAlmacen.ejecutar(0, "Estante", 2).id);
+}
+
+PRUEBA(vender_sin_pedido_abre_uno_nuevo_con_ids_automaticos) {
+    Escenario e;
+    const int cliente = e.crearCliente.ejecutar("Ana").id;
+    SolicitudFactura venta;
+    venta.clienteId = cliente;
+    venta.items = {{1, 1}};
+    const auto primera = e.vender.ejecutar(venta);
+    const auto segunda = e.vender.ejecutar(venta);
+    VERIFICAR_IGUAL(1, primera.id);
+    VERIFICAR_IGUAL(2, segunda.id);
+    VERIFICAR(primera.pedidoId != segunda.pedidoId);
+    VERIFICAR_IGUAL(std::size_t{2}, e.listarPedidos.ejecutar().size());
+    VERIFICAR_IGUAL(cliente, e.listarPedidos.ejecutar().front().clienteId);
+}
+
+PRUEBA(una_venta_invalida_no_deja_pedidos_vacios) {
+    Escenario e;
+    SolicitudFactura venta;
+    venta.clienteId = e.crearCliente.ejecutar("Ana").id;
+    venta.items = {{1, 1}, {99, 1}};
+    VERIFICAR_LANZA(e.vender.ejecutar(venta), dominio::EntidadNoEncontrada);
+    VERIFICAR(e.listarPedidos.ejecutar().empty());
+
+    venta.clienteId = 42;
+    venta.items = {{1, 1}};
+    VERIFICAR_LANZA(e.vender.ejecutar(venta), dominio::EntidadNoEncontrada);
+}
+
+PRUEBA(crear_producto_con_cada_tipo_de_descuento) {
+    Escenario e;
+    SolicitudProducto solicitud;
+    solicitud.nombre = "Gorra";
+    solicitud.precio = Dinero::desdeUnidades(50);
+    VERIFICAR_IGUAL(5, e.crearProducto.ejecutar(solicitud).id);
+
+    solicitud.tipoDescuento = TipoDescuento::Fijo;
+    solicitud.valorDescuento = 5;
+    VERIFICAR_IGUAL(Dinero::desdeUnidades(45), e.crearProducto.ejecutar(solicitud).precioFinal);
+
+    solicitud.tipoDescuento = TipoDescuento::Porcentual;
+    solicitud.valorDescuento = 10;
+    VERIFICAR_IGUAL(Dinero::desdeUnidades(45), e.crearProducto.ejecutar(solicitud).precioFinal);
+
+    solicitud.valorDescuento = 150;
+    VERIFICAR_LANZA(e.crearProducto.ejecutar(solicitud), dominio::ValorInvalido);
+    solicitud.almacenId = 77;
+    solicitud.valorDescuento = 0;
+    VERIFICAR_LANZA(e.crearProducto.ejecutar(solicitud), dominio::EntidadNoEncontrada);
+    VERIFICAR_IGUAL(std::size_t{7}, e.listarProductos.ejecutar().size());
+}
+
+PRUEBA(arbol_y_resumen_general) {
+    Escenario e;
+    e.crearSubAlmacen.ejecutar(0, "Bodega");
+    e.crearSubAlmacen.ejecutar(0, "Estante", 2);
+    e.asignar.ejecutar(1, 3);
+    const auto arbol = e.arbol.ejecutar();
+    VERIFICAR_IGUAL(std::size_t{1}, arbol.hijos.size());
+    VERIFICAR_IGUAL(std::string("Estante"), arbol.hijos.front().hijos.front().nombre);
+    VERIFICAR_IGUAL(std::size_t{1}, arbol.hijos.front().totalProductos);
+
+    SolicitudFactura venta;
+    venta.clienteId = e.crearCliente.ejecutar("Ana").id;
+    venta.items = {{1, 2}};
+    e.vender.ejecutar(venta);
+    const auto resumen = e.resumenGeneral.ejecutar();
+    VERIFICAR_IGUAL(std::size_t{1}, resumen.clientes);
+    VERIFICAR_IGUAL(std::size_t{4}, resumen.productos);
+    VERIFICAR_IGUAL(std::size_t{3}, resumen.almacenes);
+    VERIFICAR_IGUAL(std::size_t{1}, resumen.facturas);
+    VERIFICAR_IGUAL(Dinero::desdeUnidades(180), resumen.totalFacturado);
 }

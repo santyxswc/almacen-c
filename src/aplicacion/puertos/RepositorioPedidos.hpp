@@ -48,6 +48,15 @@ public:
      * Los ids de factura son únicos en todo el sistema, no solo por pedido.
      */
     virtual bool existeFactura(int facturaId) const = 0;
+
+    /** @return Todos los pedidos ordenados por id. */
+    virtual std::vector<dominio::Pedido> listar() const = 0;
+
+    /** @return Un id libre para un pedido nuevo. */
+    virtual int siguienteId() const = 0;
+
+    /** @return Un id libre para una factura nueva (único entre todos los pedidos). */
+    virtual int siguienteFacturaId() const = 0;
 };
 
 }  // namespace almacen::aplicacion

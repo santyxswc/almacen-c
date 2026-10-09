@@ -59,6 +59,7 @@ struct FacturaDto {
  */
 struct PedidoDto {
     int id = 0;                        ///< Id del pedido.
+    int clienteId = 0;                 ///< Cliente dueño del pedido.
     std::vector<FacturaDto> facturas;  ///< Facturas del pedido.
     dominio::Dinero total;             ///< Suma de las facturas.
 };
@@ -84,6 +85,49 @@ struct AlmacenDto {
 };
 
 /**
+ * @brief Un almacén con todo su árbol de sub-almacenes (para mostrarlo como árbol).
+ */
+struct NodoAlmacenDto {
+    int id = 0;                         ///< Id del almacén.
+    std::string nombre;                 ///< Nombre del almacén.
+    std::size_t totalProductos = 0;     ///< Productos distintos en todo su árbol.
+    std::size_t productosPropios = 0;   ///< Productos guardados directamente aquí.
+    std::vector<NodoAlmacenDto> hijos;  ///< Sub-almacenes.
+};
+
+/**
+ * @brief Cifras generales del negocio para la pantalla de inicio.
+ */
+struct ResumenGeneralDto {
+    std::size_t clientes = 0;        ///< Clientes registrados.
+    std::size_t productos = 0;       ///< Productos distintos en el catálogo.
+    std::size_t almacenes = 0;       ///< Almacenes, contando el principal.
+    std::size_t pedidos = 0;         ///< Pedidos registrados.
+    std::size_t facturas = 0;        ///< Facturas emitidas.
+    dominio::Dinero totalFacturado;  ///< Suma de todas las facturas.
+};
+
+/**
+ * @brief Tipo de descuento de un producto nuevo.
+ */
+enum class TipoDescuento {
+    Ninguno,     ///< Se vende al precio de lista.
+    Fijo,        ///< Se resta un monto fijo.
+    Porcentual,  ///< Se resta un porcentaje.
+};
+
+/**
+ * @brief Datos de entrada para crear un producto.
+ */
+struct SolicitudProducto {
+    std::string nombre;                                    ///< Nombre del producto.
+    dominio::Dinero precio;                                ///< Precio de lista.
+    TipoDescuento tipoDescuento = TipoDescuento::Ninguno;  ///< Clase de descuento.
+    double valorDescuento = 0.0;  ///< Pesos (descuento fijo) o porcentaje (descuento porcentual).
+    int almacenId = 0;            ///< Almacén donde se guarda; 0 = principal.
+};
+
+/**
  * @brief Un producto pedido en una factura nueva.
  */
 struct ItemSolicitado {
@@ -95,9 +139,10 @@ struct ItemSolicitado {
  * @brief Datos de entrada para crear una factura.
  */
 struct SolicitudFactura {
-    int facturaId = 0;                  ///< Id de la factura nueva.
-    int pedidoId = 0;                   ///< Pedido al que se agrega.
+    int facturaId = 0;                  ///< Id de la factura nueva; 0 = asignarlo automáticamente.
+    int pedidoId = 0;                   ///< Pedido al que se agrega; 0 = abrir un pedido nuevo.
     std::vector<ItemSolicitado> items;  ///< Productos a facturar.
+    int clienteId = 0;                  ///< Cliente del pedido nuevo (solo si pedidoId es 0).
 };
 
 }  // namespace almacen::aplicacion

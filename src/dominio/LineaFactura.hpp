@@ -29,6 +29,17 @@ public:
      */
     LineaFactura(const Producto& producto, int cantidad);
 
+    /**
+     * @brief Reconstruye una línea guardada (por ejemplo, al leerla de un archivo).
+     * @param productoId Id del producto facturado.
+     * @param nombreProducto Nombre del producto al momento de facturar.
+     * @param cantidad Unidades, mayor que cero.
+     * @param precioBase Precio de lista de una unidad.
+     * @param precioUnitario Precio con descuento de una unidad.
+     * @throws ValorInvalido si la cantidad no es positiva o el precio con descuento supera al de lista.
+     */
+    LineaFactura(int productoId, std::string nombreProducto, int cantidad, Dinero precioBase, Dinero precioUnitario);
+
     /** @return Id del producto facturado. */
     int productoId() const noexcept { return productoId_; }
 

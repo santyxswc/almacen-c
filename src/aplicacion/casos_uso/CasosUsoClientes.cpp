@@ -20,6 +20,10 @@ ClienteDto CrearCliente::ejecutar(int id, const std::string& nombre) {
     return aDto(cliente);
 }
 
+ClienteDto CrearCliente::ejecutar(const std::string& nombre) {
+    return ejecutar(clientes_.siguienteId(), nombre);
+}
+
 std::vector<ClienteDto> ListarClientes::ejecutar() const {
     std::vector<ClienteDto> resultado;
     for (const auto& cliente : clientes_.listar()) {
