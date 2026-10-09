@@ -1,0 +1,58 @@
+# @file version-windows.yml
+# @brief Empaqueta la aplicación de escritorio para Windows (no necesita instalar nada).
+# @author Santiago Caicedo
+#
+# - Manual: Actions → "Versión para Windows" → Run workflow, y descargar el .zip del resultado.
+# - Al publicar una etiqueta vX.Y.Z, además crea un Release con el .zip.
+
+name: Versión para Windows
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.8.*"
+          cache: true
+
+      - name: Compilar
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release
+
+      - name: Pruebas
+        run: ctest --test-dir build -C Release --output-on-failure
+        env:
+          QT_QPA_PLATFORM: offscreen
+
+      - name: Empaquetar con las bibliotecas de Qt
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist/SistemaAlmacen | Out-Null
+          Copy-Item build/Release/SistemaAlmacen.exe dist/SistemaAlmacen/
+          Copy-Item build/Release/almacen.exe dist/SistemaAlmacen/almacen-consola.exe
+          windeployqt --release --no-translations --no-system-d3d-compiler --no-opengl-sw dist/SistemaAlmacen/SistemaAlmacen.exe
+          Compress-Archive -Path dist/SistemaAlmacen -DestinationPath dist/SistemaAlmacen-windows.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SistemaAlmacen-windows
+          path: dist/SistemaAlmacen-windows.zip
+
+      - name: Publicar Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${{ github.ref_name }}" dist/SistemaAlmacen-windows.zip --generate-notes --title "Sistema de Almacén ${{ github.ref_name }}"
