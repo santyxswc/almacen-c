@@ -11,6 +11,19 @@
 
 namespace almacen::presentacion {
 
+namespace {
+
+/** @brief Completa con espacios contando letras, no bytes (las tildes ocupan 2 bytes en UTF-8). */
+std::string rellenar(const std::string& texto, std::size_t ancho) {
+    std::size_t letras = 0;
+    for (char c : texto) {
+        letras += (static_cast<unsigned char>(c) & 0xC0U) != 0x80U ? 1 : 0;
+    }
+    return letras >= ancho ? texto + ' ' : texto + std::string(ancho - letras, ' ');
+}
+
+}  // namespace
+
 void mostrarSeparador(std::ostream& salida) {
     salida << std::string(64, '-') << '\n';
 }
@@ -23,7 +36,7 @@ void mostrarProductos(std::ostream& salida, const std::vector<aplicacion::Produc
     salida << std::left << std::setw(5) << "  ID" << std::setw(14) << "Producto" << std::setw(12) << "Precio"
            << std::setw(22) << "Descuento" << "Precio final\n";
     for (const auto& producto : productos) {
-        salida << "  " << std::left << std::setw(3) << producto.id << std::setw(14) << producto.nombre << std::setw(12)
+        salida << "  " << std::left << std::setw(3) << producto.id << rellenar(producto.nombre, 14) << std::setw(12)
                << producto.precioBase.formatear() << std::setw(22) << producto.descuento
                << producto.precioFinal.formatear() << '\n';
     }
@@ -42,9 +55,8 @@ void mostrarClientes(std::ostream& salida, const std::vector<aplicacion::Cliente
 void mostrarFactura(std::ostream& salida, const aplicacion::FacturaDto& factura) {
     salida << "  Factura " << factura.id << " (pedido " << factura.pedidoId << ")\n";
     for (const auto& linea : factura.lineas) {
-        salida << "    " << std::left << std::setw(14) << linea.producto << " x" << std::setw(4) << linea.cantidad
-               << " a " << std::setw(10) << linea.precioUnitario.formatear() << " = " << linea.subtotal.formatear()
-               << '\n';
+        salida << "    " << std::left << rellenar(linea.producto, 14) << " x" << std::setw(4) << linea.cantidad << " a "
+               << std::setw(10) << linea.precioUnitario.formatear() << " = " << linea.subtotal.formatear() << '\n';
     }
     if (!factura.ahorro.esCero()) {
         salida << "    Ahorro por descuentos: " << factura.ahorro.formatear() << '\n';

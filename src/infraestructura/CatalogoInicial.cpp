@@ -18,10 +18,10 @@ dominio::Almacen crearAlmacenConCatalogoInicial() {
     using dominio::Dinero;
     using dominio::Producto;
 
-    dominio::Almacen principal(1, "Almacen principal");
+    dominio::Almacen principal(1, "Almacén principal");
     principal.agregarProducto(std::make_shared<const Producto>(
         1, "Camisa", Dinero::desdeUnidades(100), std::make_unique<DescuentoFijo>(Dinero::desdeUnidades(10))));
-    principal.agregarProducto(std::make_shared<const Producto>(2, "Pantalon", Dinero::desdeUnidades(200),
+    principal.agregarProducto(std::make_shared<const Producto>(2, "Pantalón", Dinero::desdeUnidades(200),
                                                                std::make_unique<DescuentoPorcentual>(20)));
     principal.agregarProducto(std::make_shared<const Producto>(
         3, "Zapatillas", Dinero::desdeUnidades(300), std::make_unique<DescuentoFijo>(Dinero::desdeUnidades(30))));

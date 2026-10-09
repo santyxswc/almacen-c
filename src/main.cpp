@@ -7,6 +7,11 @@
 #include <exception>
 #include <iostream>
 
+#ifdef _WIN32
+#define NOMINMAX
+#include <windows.h>
+#endif
+
 #include "Aplicacion.hpp"
 
 /**
@@ -14,6 +19,11 @@
  * @return 0 si terminó normalmente, 1 si ocurrió un error inesperado.
  */
 int main() {
+#ifdef _WIN32
+    // Muestra bien las tildes y la ñ en la consola de Windows.
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+#endif
     try {
         almacen::ejecutarAplicacion(std::cin, std::cout);
         return 0;
