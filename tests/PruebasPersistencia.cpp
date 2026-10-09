@@ -82,9 +82,15 @@ PRUEBA(guardar_y_cargar_conserva_todo) {
     // Guardar de nuevo lo cargado produce el mismo archivo.
     const std::string copia = rutaTemporal("copia.txt");
     infraestructura::ArchivoDatos(copia).guardar(clientes2, pedidos2, almacenes2);
-    std::ifstream a(ruta), b(copia);
-    const std::string textoA((std::istreambuf_iterator<char>(a)), std::istreambuf_iterator<char>());
-    const std::string textoB((std::istreambuf_iterator<char>(b)), std::istreambuf_iterator<char>());
+    std::string textoA;
+    std::string textoB;
+    {
+        // Se cierran antes de borrar: Windows no deja borrar archivos abiertos.
+        std::ifstream a(ruta);
+        std::ifstream b(copia);
+        textoA.assign(std::istreambuf_iterator<char>(a), std::istreambuf_iterator<char>());
+        textoB.assign(std::istreambuf_iterator<char>(b), std::istreambuf_iterator<char>());
+    }
     VERIFICAR(textoA == textoB);
     std::filesystem::remove(ruta);
     std::filesystem::remove(copia);

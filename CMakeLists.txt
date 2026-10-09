@@ -78,6 +78,16 @@ if(ALMACEN_BUILD_GUI)
     find_package(Qt6 6.4 QUIET COMPONENTS Widgets Test)
     if(Qt6_FOUND)
         set(CMAKE_AUTOMOC ON)
+        # El SDK actual de macOS ya no trae el framework AGL, pero algunas versiones de Qt lo siguen
+        # pidiendo al enlazar. Se quita de la lista para que compile con cualquier Xcode.
+        if(APPLE AND TARGET WrapOpenGL::WrapOpenGL)
+            get_target_property(_bibliotecas_opengl WrapOpenGL::WrapOpenGL INTERFACE_LINK_LIBRARIES)
+            if(_bibliotecas_opengl)
+                list(FILTER _bibliotecas_opengl EXCLUDE REGEX "AGL")
+                set_target_properties(WrapOpenGL::WrapOpenGL PROPERTIES
+                    INTERFACE_LINK_LIBRARIES "${_bibliotecas_opengl}")
+            endif()
+        endif()
         add_library(almacen_escritorio STATIC
             src/presentacion/escritorio/Comun.cpp
             src/presentacion/escritorio/Pagina.hpp
