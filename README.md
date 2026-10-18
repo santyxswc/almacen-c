@@ -42,7 +42,7 @@ ventana y la consola usan **exactamente los mismos casos de uso**: solo cambia l
 
 La primera vez el programa trae cuatro productos de ejemplo. Los datos se guardan solos en
 `%APPDATA%\SantiagoCaicedo\SistemaAlmacen\datos-almacen.txt`; para hacer una copia de seguridad basta
-con copiar ese archivo.
+con copiar ese archivo. El [manual de uso](docs/MANUAL_USUARIO.md) explica cada pantalla paso a paso.
 
 ## Compilar
 
@@ -57,15 +57,50 @@ cmake --build build --config Release
 ./build/almacen            # versión de consola
 ```
 
-Pruebas y documentación:
+Pruebas:
 
 ```bash
-ctest --test-dir build -C Release --output-on-failure   # 40 pruebas
-doxygen Doxyfile                                         # abre docs/api/html/index.html
+ctest --test-dir build -C Release --output-on-failure   # 40 pruebas, incluida la ventana
 ```
 
-Las capturas de este README se generan con datos de ejemplo:
-`cmake --build build --target capturas_escritorio && QT_QPA_PLATFORM=offscreen ./build/capturas_escritorio docs/capturas`.
+## Documentación del código
+
+Todo el código está documentado con **Doxygen**: cada archivo tiene su encabezado `@file`, `@brief` y
+`@author Santiago Caicedo`, y cada clase, función y parámetro público tiene su descripción.
+
+```bash
+doxygen Doxyfile          # o: cmake --build build --target docs
+```
+
+Abra `docs/api/html/index.html`: incluye este README como página principal, la arquitectura, la guía
+de desarrollo y los diagramas de clases (si Graphviz está instalado). La configuración es estricta: avisa
+de cualquier cosa sin documentar, y la CI falla si aparece un aviso.
+
+## Para futuros cambios
+
+Antes de modificar el proyecto, lea la [**guía de desarrollo**](docs/DESARROLLO.md). Ahí está:
+
+- cómo preparar el entorno en Linux y Windows, y el ciclo compilar → probar → formatear → documentar;
+- las **reglas de la arquitectura** (qué capa puede usar a cuál, dónde van las reglas del negocio);
+- la **plantilla de documentación Doxygen** que sigue cada archivo;
+- una tabla de **dónde va cada cambio**: un descuento nuevo, una regla del negocio, un caso de uso,
+  una pantalla, colores y estilos, un dato nuevo en el archivo de datos, otra base de datos;
+- qué cubre cada archivo de pruebas y cómo agregar una prueba;
+- cómo **publicar una versión** y generar el `.exe` para Windows.
+
+Resumen rápido:
+
+| Quiero cambiar... | Dónde |
+| --- | --- |
+| Una regla del negocio (precios, descuentos, validaciones) | `src/dominio/` |
+| Lo que hace una operación (vender, crear producto...) | `src/aplicacion/casos_uso/` |
+| Cómo se guardan los datos | `src/infraestructura/ArchivoDatos.cpp` |
+| Una pantalla de la ventana | `src/presentacion/escritorio/Pagina*.cpp` |
+| Colores, letras y espaciado | `hojaDeEstilos()` en `src/presentacion/escritorio/Comun.cpp` |
+| El menú de consola | `src/presentacion/comandos/` y `src/Aplicacion.cpp` |
+| Las capturas del README | `herramientas/capturas_escritorio.cpp` |
+
+Los cambios de cada versión se anotan en [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Arquitectura
 
@@ -101,7 +136,7 @@ src/
 └── main.cpp
 tests/                  Pruebas del dominio, casos de uso, archivo de datos, consola y ventana (Qt Test)
 herramientas/           Generador de capturas de pantalla
-docs/                   Arquitectura, capturas y UML de la primera versión
+docs/                   Manual de uso, guía de desarrollo, arquitectura, capturas y UML de la primera versión
 ```
 
 | Patrón | Uso |
@@ -115,6 +150,16 @@ docs/                   Arquitectura, capturas y UML de la primera versión
 
 El detalle de cada capa, el diagrama de clases y cómo se cumple cada principio SOLID están en
 [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md).
+
+## Documentos
+
+| Documento | Para quién | Contenido |
+| --- | --- | --- |
+| [`docs/MANUAL_USUARIO.md`](docs/MANUAL_USUARIO.md) | Quien usa el programa | Cada pantalla paso a paso y copias de seguridad |
+| [`docs/DESARROLLO.md`](docs/DESARROLLO.md) | Quien cambia el código | Entorno, reglas, dónde va cada cambio, pruebas, versiones |
+| [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md) | Quien quiere entender el diseño | Capas, diagrama de clases, patrones y SOLID |
+| [`CHANGELOG.md`](CHANGELOG.md) | Todos | Qué cambió en cada versión |
+| `docs/api/html/index.html` | Quien cambia el código | Referencia de la API generada con Doxygen |
 
 ## Mejoras respecto a la primera versión
 
@@ -135,4 +180,4 @@ El detalle de cada capa, el diagrama de clases y cómo se cumple cada principio 
 
 ## Autor
 
-**Santiago Caicedo** — [@santyxswc](https://github.com/santyxswc)
+**Santiago Caicedo** — [\@santyxswc](https://github.com/santyxswc)
