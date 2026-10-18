@@ -46,6 +46,8 @@ public:
      * @brief Indica si alguna factura de cualquier pedido tiene ese id.
      *
      * Los ids de factura son únicos en todo el sistema, no solo por pedido.
+     * @param facturaId Id de la factura buscada.
+     * @return true si ya existe.
      */
     virtual bool existeFactura(int facturaId) const = 0;
 

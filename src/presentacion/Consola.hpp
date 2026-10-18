@@ -25,6 +25,7 @@ public:
  */
 class FinDeEntrada : public std::runtime_error {
 public:
+    /** @brief Crea el error con un mensaje fijo. */
     FinDeEntrada() : std::runtime_error("Fin de la entrada.") {}
 };
 

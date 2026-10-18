@@ -28,7 +28,10 @@ public:
     /** @return La cantidad elegida (al menos 1). */
     int valor() const;
 
-    /** @brief Cambia la cantidad sin emitir `valorCambiado`. */
+    /**
+     * @brief Cambia la cantidad sin emitir `valorCambiado`.
+     * @param cantidad Cantidad nueva.
+     */
     void ponerValor(int cantidad);
 
 signals:

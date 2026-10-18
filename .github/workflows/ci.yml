@@ -61,3 +61,26 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verificar formato
         run: find src tests herramientas -name '*.?pp' | xargs clang-format --dry-run --Werror
+
+  documentacion:
+    name: Documentación (Doxygen)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Instalar Doxygen y Graphviz
+        run: sudo apt-get update && sudo apt-get install -y doxygen graphviz
+      - name: Generar y exigir que todo esté documentado
+        run: |
+          doxygen Doxyfile 2> avisos.txt || true
+          # El aviso sobre la traducción al español de Doxygen no depende del proyecto.
+          grep -v -e "output language" -e "since release" -e '^$' avisos.txt > avisos-proyecto.txt || true
+          if [ -s avisos-proyecto.txt ]; then
+            cat avisos-proyecto.txt
+            echo "::error::Hay código sin documentar o errores en los comentarios Doxygen."
+            exit 1
+          fi
+          echo "Documentación completa: $(ls docs/api/html/*.html | wc -l) páginas."
+      - uses: actions/upload-artifact@v4
+        with:
+          name: documentacion-api
+          path: docs/api/html

@@ -42,13 +42,19 @@ public:
      */
     void agregarPagina(const QString& titulo, Pagina* pagina);
 
-    /** @brief Muestra la pantalla en la posición indicada y la actualiza. */
+    /**
+     * @brief Muestra la pantalla en la posición indicada y la actualiza.
+     * @param indice Posición en el menú (ver IndicePagina).
+     */
     void mostrarPagina(int indice);
 
     /** @brief Actualiza todas las pantallas con los datos actuales. */
     void refrescarTodo();
 
-    /** @return La pantalla en la posición indicada. */
+    /**
+     * @param indice Posición en el menú (ver IndicePagina).
+     * @return La pantalla en esa posición.
+     */
     Pagina* pagina(int indice) const { return paginas_.at(static_cast<std::size_t>(indice)); }
 
 private:

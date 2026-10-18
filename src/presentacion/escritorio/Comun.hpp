@@ -20,10 +20,18 @@ class QPushButton;
 
 namespace almacen::presentacion::escritorio {
 
-/** @brief Convierte texto de la capa de aplicación (UTF-8) a QString. */
+/**
+ * @brief Convierte texto de la capa de aplicación (UTF-8) a QString.
+ * @param texto Texto en UTF-8.
+ * @return El mismo texto como QString.
+ */
 QString aQString(const std::string& texto);
 
-/** @brief Convierte un QString a texto UTF-8 para la capa de aplicación. */
+/**
+ * @brief Convierte un QString a texto UTF-8 para la capa de aplicación.
+ * @param texto Texto escrito por el usuario.
+ * @return El texto en UTF-8, sin espacios en los extremos.
+ */
 std::string aStd(const QString& texto);
 
 /**
@@ -45,13 +53,28 @@ QString dinero(dominio::Dinero valor);
  */
 bool ejecutarSeguro(QWidget* padre, const std::function<void()>& accion);
 
-/** @brief Crea el título grande de una pantalla. */
+/**
+ * @brief Crea el título grande de una pantalla.
+ * @param texto Título.
+ * @param padre Widget padre.
+ * @return La etiqueta creada.
+ */
 QLabel* crearTitulo(const QString& texto, QWidget* padre = nullptr);
 
-/** @brief Crea un texto de ayuda gris debajo de un título. */
+/**
+ * @brief Crea un texto de ayuda gris debajo de un título.
+ * @param texto Texto de ayuda.
+ * @param padre Widget padre.
+ * @return La etiqueta creada.
+ */
 QLabel* crearAyuda(const QString& texto, QWidget* padre = nullptr);
 
-/** @brief Crea un botón con el estilo principal (verde). */
+/**
+ * @brief Crea un botón con el estilo principal (verde).
+ * @param texto Texto del botón.
+ * @param padre Widget padre.
+ * @return El botón creado.
+ */
 QPushButton* crearBotonPrincipal(const QString& texto, QWidget* padre = nullptr);
 
 /**
@@ -73,6 +96,8 @@ void ponerCelda(QTableWidget* tabla, int fila, int columna, const QString& texto
 
 /**
  * @brief Describe el descuento de un producto como el dinero que se ahorra por unidad.
+ * @param precioBase Precio de lista.
+ * @param precioFinal Precio con descuento.
  * @return Texto como `− $ 10.000,00`, o una raya si no tiene descuento.
  */
 QString textoDescuento(dominio::Dinero precioBase, dominio::Dinero precioFinal);
@@ -86,6 +111,8 @@ void alinearColumnasNumericas(QTableWidget* tabla, std::initializer_list<int> co
 
 /**
  * @brief Hace que una columna use solo el ancho de su contenido (por ejemplo, la de números de id).
+ * @param tabla Tabla ya configurada.
+ * @param columna Índice de la columna.
  */
 void columnaAngosta(QTableWidget* tabla, int columna);
 

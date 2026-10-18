@@ -35,10 +35,23 @@ public:
     Producto(int id, std::string nombre, Dinero precioBase,
              std::unique_ptr<PoliticaDescuento> descuento = std::make_unique<SinDescuento>());
 
-    /** @brief Copia profunda: la copia tiene su propia estrategia de descuento. */
+    /**
+     * @brief Copia profunda: la copia tiene su propia estrategia de descuento.
+     * @param otro Producto a copiar.
+     */
     Producto(const Producto& otro);
+
+    /**
+     * @brief Asigna una copia profunda de otro producto.
+     * @param otro Producto a copiar.
+     * @return Este producto.
+     */
     Producto& operator=(const Producto& otro);
+
+    /** @brief Mueve un producto sin copiar su descuento. */
     Producto(Producto&&) noexcept = default;
+
+    /** @brief Mueve un producto sin copiar su descuento. @return Este producto. */
     Producto& operator=(Producto&&) noexcept = default;
 
     int id() const noexcept override { return id_; }

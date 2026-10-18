@@ -45,7 +45,10 @@ public:
     /** @return Las facturas del pedido. */
     const std::vector<Factura>& facturas() const noexcept { return facturas_; }
 
-    /** @return true si alguna factura del pedido tiene ese id. */
+    /**
+     * @param facturaId Id de la factura buscada.
+     * @return true si alguna factura del pedido tiene ese id.
+     */
     bool tieneFactura(int facturaId) const noexcept;
 
     /** @return Suma de los totales de todas las facturas. */

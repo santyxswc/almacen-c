@@ -49,15 +49,18 @@ public:
     /** @brief Guarda los datos en el archivo. @return Mensaje de error, o vacío si salió bien. */
     std::string guardar();
 
-    /** @name Casos de uso (para cargar datos de ejemplo desde herramientas) */
-    ///@{
+    /** @return Caso de uso para registrar clientes (lo usan las herramientas para cargar datos de ejemplo). */
     aplicacion::CrearCliente& crearCliente() { return crearCliente_; }
+    /** @return Caso de uso para emitir facturas. */
     aplicacion::CrearFactura& crearFactura() { return crearFactura_; }
+    /** @return Caso de uso para registrar productos. */
     aplicacion::CrearProducto& crearProducto() { return crearProducto_; }
+    /** @return Caso de uso para crear sub-almacenes. */
     aplicacion::CrearSubAlmacen& crearSubAlmacen() { return crearSubAlmacen_; }
+    /** @return Caso de uso para guardar un producto en un almacén. */
     aplicacion::AsignarProductoAAlmacen& asignarProducto() { return asignarProducto_; }
+    /** @return Caso de uso que entrega el árbol de almacenes. */
     const aplicacion::ConsultarArbolAlmacenes& arbolAlmacenes() const { return arbolAlmacenes_; }
-    ///@}
 
 private:
     infraestructura::ArchivoDatos archivo_;

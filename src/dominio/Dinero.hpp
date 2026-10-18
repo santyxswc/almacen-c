@@ -26,6 +26,7 @@ public:
     /**
      * @brief Crea un valor a partir de centavos.
      * @param centavos Cantidad en centavos, mayor o igual a cero.
+     * @return El valor creado.
      * @throws ValorInvalido si la cantidad es negativa.
      */
     static Dinero desdeCentavos(std::int64_t centavos);
@@ -33,6 +34,7 @@ public:
     /**
      * @brief Crea un valor a partir de unidades (pesos), redondeando al centavo.
      * @param unidades Cantidad en pesos, mayor o igual a cero.
+     * @return El valor creado.
      * @throws ValorInvalido si la cantidad es negativa o no es un número.
      */
     static Dinero desdeUnidades(double unidades);
@@ -43,10 +45,18 @@ public:
     /** @return true si el valor es cero. */
     bool esCero() const noexcept { return centavos_ == 0; }
 
-    /** @brief Suma dos cantidades. */
+    /**
+     * @brief Suma dos cantidades.
+     * @param otro Cantidad a sumar.
+     * @return La suma, como un valor nuevo.
+     */
     Dinero operator+(Dinero otro) const noexcept;
 
-    /** @brief Suma otra cantidad a esta. */
+    /**
+     * @brief Suma otra cantidad a esta.
+     * @param otro Cantidad a sumar.
+     * @return Esta misma cantidad, ya actualizada.
+     */
     Dinero& operator+=(Dinero otro) noexcept;
 
     /**
@@ -59,6 +69,7 @@ public:
     /**
      * @brief Multiplica por una cantidad de unidades.
      * @param cantidad Número de unidades, mayor o igual a cero.
+     * @return El producto de esta cantidad por las unidades.
      * @throws ValorInvalido si la cantidad es negativa.
      */
     Dinero multiplicar(int cantidad) const;
@@ -66,6 +77,7 @@ public:
     /**
      * @brief Calcula un porcentaje de esta cantidad, redondeado al centavo.
      * @param porcentaje Valor entre 0 y 100.
+     * @return El porcentaje de esta cantidad.
      * @throws ValorInvalido si el porcentaje está fuera de rango.
      */
     Dinero porcentaje(double porcentaje) const;
@@ -73,9 +85,29 @@ public:
     /** @return Texto legible, por ejemplo `$1250.50`. */
     std::string formatear() const;
 
+    /**
+     * @brief Compara dos cantidades.
+     * @param otro Cantidad con la que se compara.
+     * @return true si las dos cantidades son iguales.
+     */
     bool operator==(Dinero otro) const noexcept { return centavos_ == otro.centavos_; }
+    /**
+     * @brief Compara dos cantidades.
+     * @param otro Cantidad con la que se compara.
+     * @return true si las cantidades son distintas.
+     */
     bool operator!=(Dinero otro) const noexcept { return centavos_ != otro.centavos_; }
+    /**
+     * @brief Compara dos cantidades.
+     * @param otro Cantidad con la que se compara.
+     * @return true si esta cantidad es menor que la otra.
+     */
     bool operator<(Dinero otro) const noexcept { return centavos_ < otro.centavos_; }
+    /**
+     * @brief Compara dos cantidades.
+     * @param otro Cantidad con la que se compara.
+     * @return true si esta cantidad es mayor que la otra.
+     */
     bool operator>(Dinero otro) const noexcept { return centavos_ > otro.centavos_; }
 
 private:

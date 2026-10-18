@@ -20,6 +20,10 @@
  *
  * Si el archivo de datos está dañado, ofrece guardarlo aparte y empezar de
  * nuevo en lugar de cerrarse sin explicación.
+ *
+ * @param argc Cantidad de argumentos de la línea de comandos.
+ * @param argv Argumentos de la línea de comandos (Qt los usa para sus opciones).
+ * @return 0 al cerrar la ventana normalmente; 1 si el usuario no quiso empezar con datos nuevos.
  */
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);

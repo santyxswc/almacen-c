@@ -51,7 +51,10 @@ public:
      */
     void agregarAlCarrito(int productoId, int cantidad);
 
-    /** @brief Selecciona un cliente en la lista, si existe. */
+    /**
+     * @brief Selecciona un cliente en la lista, si existe.
+     * @param clienteId Cliente a seleccionar.
+     */
     void seleccionarCliente(int clienteId);
 
 private:

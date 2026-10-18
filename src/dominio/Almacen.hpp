@@ -36,9 +36,13 @@ public:
      */
     Almacen(int id, std::string nombre);
 
+    /** @brief No se copia: los sub-almacenes tienen un único dueño. */
     Almacen(const Almacen&) = delete;
+    /** @brief No se copia: los sub-almacenes tienen un único dueño. @return Este almacén. */
     Almacen& operator=(const Almacen&) = delete;
+    /** @brief Se puede mover (por ejemplo, para entregarlo a un repositorio). */
     Almacen(Almacen&&) noexcept = default;
+    /** @brief Se puede mover (por ejemplo, para entregarlo a un repositorio). @return Este almacén. */
     Almacen& operator=(Almacen&&) noexcept = default;
 
     int id() const noexcept override { return id_; }
@@ -73,6 +77,7 @@ public:
      * @brief Cuenta los productos distintos de este almacén y de todos sus descendientes.
      *
      * Un producto que está en varios almacenes del árbol cuenta una sola vez.
+     * @return Cantidad de productos distintos.
      */
     std::size_t totalProductos() const;
 
@@ -83,7 +88,10 @@ public:
      */
     std::shared_ptr<const Producto> buscarProducto(int productoId) const;
 
-    /** @return true si el producto está guardado directamente en este almacén. */
+    /**
+     * @param productoId Id del producto.
+     * @return true si el producto está guardado directamente en este almacén.
+     */
     bool contieneProducto(int productoId) const noexcept;
 
     /**

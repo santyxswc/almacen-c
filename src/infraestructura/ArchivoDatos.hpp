@@ -77,6 +77,9 @@ public:
 
     /**
      * @brief Escribe el estado actual de los repositorios.
+     * @param clientes Repositorio de clientes.
+     * @param pedidos Repositorio de pedidos (con sus facturas).
+     * @param almacenes Repositorio con el árbol de almacenes y los productos.
      * @throws ErrorArchivo si no se puede escribir.
      */
     void guardar(const aplicacion::RepositorioClientes& clientes, const aplicacion::RepositorioPedidos& pedidos,
